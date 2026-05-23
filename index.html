@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Mercado de Trabalho na Era da IA — Painel Analítico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --panel: #ffffff;
+    --ink: #1a1d24;
+    --ink-soft: #4a5160;
+    --ink-mute: #8a92a3;
+    --line: #e6e6e6;
+    --line-soft: #f2f2f2;
+    --accent: #1a1d24;
+    --accent-2: #4a5160;
+    --c-red:    #d62828;
+    --c-blue:   #1f77b4;
+    --c-green:  #2a9d3f;
+    --c-yellow: #f4b400;
+    --c-purple: #7b3ea8;
+    --c-orange: #ef7c1e;
+    --c-teal:   #17a2a2;
+    --c-pink:   #d6336c;
+    --pos: #2a9d3f;
+    --neg: #d62828;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 56px 40px 80px;
+  }
+  header.hero {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 36px;
+    margin-bottom: 48px;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 16px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 18px;
+    height: 1px;
+    background: var(--ink);
+  }
+  h1 {
+    font-size: 44px;
+    font-weight: 700;
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  h1 em {
+    font-family: 'Roboto', Arial, sans-serif;
+    font-weight: 500;
+    font-style: italic;
+    color: var(--accent);
+  }
+  .lede {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 720px;
+    margin: 0 0 24px;
+  }
+  .meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--ink-mute);
+  }
+  .meta span strong { color: var(--ink); font-weight: 600; }
+
+  /* KPI cards */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 56px;
+  }
+  .kpi {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px;
+  }
+  .kpi-label {
+    font-size: 12px;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .kpi-value {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .kpi-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+  }
+  .kpi-sub.up { color: var(--pos); }
+  .kpi-sub.down { color: var(--neg); }
+
+  /* Section */
+  section { margin-bottom: 56px; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 14px;
+  }
+  .section-head h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .section-head .num {
+    font-family: 'Roboto', Arial, sans-serif;
+    font-style: italic;
+    font-weight: 500;
+    color: var(--accent-2);
+    font-size: 14px;
+  }
+  .section-intro {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: -12px 0 24px;
+    max-width: 760px;
+  }
+
+  /* Grids */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 20px; }
+  .grid-2-uneven { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px;
+  }
+  .card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: -0.005em;
+  }
+  .card .sub {
+    font-size: 12px;
+    color: var(--ink-mute);
+    margin-bottom: 18px;
+  }
+  .chart-box { position: relative; height: 320px; }
+  .chart-box.tall { height: 380px; }
+  .chart-box.short { height: 240px; }
+
+  /* Tables */
+  table.rank {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  table.rank th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-mute);
+    padding: 8px 8px 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  table.rank td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--ink);
+  }
+  table.rank tr:last-child td { border-bottom: 0; }
+  table.rank td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+  table.rank td.pos { color: var(--pos); }
+  table.rank td.neg { color: var(--neg); }
+  table.rank td.rank-idx {
+    width: 26px;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink-mute);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  footer em {
+    font-family: 'Roboto', Arial, sans-serif;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 960px) {
+    .container { padding: 32px 20px; }
+    h1 { font-size: 32px; }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .grid-3, .grid-2-uneven { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="hero">
+    <div class="eyebrow">Trabalho de Conclusão — Análise de Dados</div>
+    <h1>O mercado de trabalho na <em>era da inteligência artificial</em></h1>
+    <p class="lede">
+      Um retrato analítico de como salário, escolaridade, risco de automação e
+      perspectivas de crescimento se distribuem entre <strong id="rowCount">…</strong>
+      vagas em oito setores e oito países.
+    </p>
+    <div class="meta">
+      <span>Fonte: <strong>AI Job Trends Dataset</strong></span>
+      <span>Atualização: <strong id="genDate">…</strong></span>
+    </div>
+  </header>
+
+  <!-- KPIs -->
+  <div class="kpis">
+    <div class="kpi">
+      <div class="kpi-label">Salário Mediano Médio</div>
+      <div class="kpi-value" id="kpiSalary">—</div>
+      <div class="kpi-sub">USD anuais entre todas as ocupações</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Risco de Automação Médio</div>
+      <div class="kpi-value" id="kpiAuto">—</div>
+      <div class="kpi-sub">probabilidade de substituição por IA</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Trabalho Remoto Médio</div>
+      <div class="kpi-value" id="kpiRemote">—</div>
+      <div class="kpi-sub">parcela de horas em regime remoto</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Crescimento Projetado 2024 → 2030</div>
+      <div class="kpi-value" id="kpiGrowth">—</div>
+      <div class="kpi-sub" id="kpiGrowthSub">vagas totais</div>
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <section>
+    <div class="section-head">
+      <h2>Panorama por setor</h2>
+      <span class="num">— 01</span>
+    </div>
+    <p class="section-intro">
+      Cada setor é apresentado em três dimensões: o salário médio que oferece, o risco
+      médio de automação dos cargos que abriga e a previsão de crescimento de vagas até
+      2030. Setores com crescimento negativo aparecem em vermelho.
+    </p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Salário médio por setor</h3>
+        <div class="sub">em dólares — média das medianas reportadas</div>
+        <div class="chart-box"><canvas id="chartSalaryByIndustry"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Risco de automação por setor</h3>
+        <div class="sub">probabilidade média (%) de substituição por IA</div>
+        <div class="chart-box"><canvas id="chartAutoByIndustry"></canvas></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <h3>Crescimento projetado de vagas (2024 → 2030)</h3>
+      <div class="sub">variação percentual no total de vagas, por setor</div>
+      <div class="chart-box tall"><canvas id="chartGrowthByIndustry"></canvas></div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="section-head">
+      <h2>Composição da força de trabalho</h2>
+      <span class="num">— 02</span>
+    </div>
+    <p class="section-intro">
+      Como as vagas se distribuem entre níveis de escolaridade, status de demanda e
+      intensidade do impacto da IA.
+    </p>
+    <div class="grid-3">
+      <div class="card">
+        <h3>Vagas e salário por escolaridade</h3>
+        <div class="sub">contagem e média salarial</div>
+        <div class="chart-box tall"><canvas id="chartEducation"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Status do cargo</h3>
+        <div class="sub">tendência reportada</div>
+        <div class="chart-box tall"><canvas id="chartStatus"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Nível de impacto da IA</h3>
+        <div class="sub">classificação qualitativa</div>
+        <div class="chart-box tall"><canvas id="chartImpact"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="section-head">
+      <h2>Distribuições</h2>
+      <span class="num">— 03</span>
+    </div>
+    <p class="section-intro">
+      As duas variáveis mais determinantes do dataset — salário e risco de automação —
+      analisadas por sua distribuição em faixas.
+    </p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Distribuição de salários</h3>
+        <div class="sub">quantidade de vagas por faixa salarial (USD)</div>
+        <div class="chart-box"><canvas id="chartSalaryDist"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Distribuição do risco de automação</h3>
+        <div class="sub">quantidade de vagas por faixa de risco (%)</div>
+        <div class="chart-box"><canvas id="chartRiskDist"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section>
+    <div class="section-head">
+      <h2>Setor × Impacto da IA</h2>
+      <span class="num">— 04</span>
+    </div>
+    <p class="section-intro">
+      Empilhamento da exposição à IA em cada setor: a parcela em alto, moderado e baixo
+      impacto revela onde a transformação será mais profunda.
+    </p>
+    <div class="card">
+      <h3>Composição do impacto da IA por setor</h3>
+      <div class="sub">contagem de cargos por nível</div>
+      <div class="chart-box tall"><canvas id="chartIndustryImpact"></canvas></div>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section>
+    <div class="section-head">
+      <h2>Geografia</h2>
+      <span class="num">— 05</span>
+    </div>
+    <p class="section-intro">
+      Distribuição das vagas entre os oito países cobertos e o salário médio reportado em
+      cada um.
+    </p>
+    <div class="grid-2-uneven">
+      <div class="card">
+        <h3>Vagas por país</h3>
+        <div class="sub">contagem absoluta</div>
+        <div class="chart-box"><canvas id="chartLocationCount"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Salário médio por país</h3>
+        <div class="sub">em dólares</div>
+        <div class="chart-box"><canvas id="chartLocationSalary"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section>
+    <div class="section-head">
+      <h2>Risco × Trabalho remoto</h2>
+      <span class="num">— 06</span>
+    </div>
+    <p class="section-intro">
+      Cada ponto é uma ocupação. O eixo horizontal mede o risco de automação; o vertical,
+      a parcela de trabalho remoto. O tamanho da bolha indica o salário relativo.
+    </p>
+    <div class="card">
+      <div class="chart-box tall"><canvas id="chartScatter"></canvas></div>
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section>
+    <div class="section-head">
+      <h2>Rankings</h2>
+      <span class="num">— 07</span>
+    </div>
+    <p class="section-intro">
+      Os destaques do dataset: as ocupações mais bem pagas, as mais ameaçadas pela
+      automação e as que mais devem crescer até 2030.
+    </p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>10 cargos mais bem remunerados</h3>
+        <div class="sub">média salarial, mínimo de 5 ocorrências</div>
+        <table class="rank" id="tableHighestPaid"><thead><tr>
+          <th></th><th>Cargo</th><th style="text-align:right">Salário Médio</th><th style="text-align:right">Vagas</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+      <div class="card">
+        <h3>10 cargos com maior risco de automação</h3>
+        <div class="sub">probabilidade média de substituição</div>
+        <table class="rank" id="tableAutomatable"><thead><tr>
+          <th></th><th>Cargo</th><th style="text-align:right">Risco</th><th style="text-align:right">Vagas</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+      <div class="card">
+        <h3>10 cargos em maior crescimento</h3>
+        <div class="sub">variação projetada 2024 → 2030</div>
+        <table class="rank" id="tableGrowing"><thead><tr>
+          <th></th><th>Cargo</th><th style="text-align:right">Crescimento</th><th style="text-align:right">Salário</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+      <div class="card">
+        <h3>10 cargos mais frequentes no dataset</h3>
+        <div class="sub">por número de ocorrências</div>
+        <table class="rank" id="tableListed"><thead><tr>
+          <th></th><th>Cargo</th><th style="text-align:right">Vagas</th><th style="text-align:right">Salário</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span><em>Painel construído sobre o AI Job Trends Dataset</em> · dados agregados localmente</span>
+    <span id="footerStats">—</span>
+  </footer>
+</div>
+
+<script>
+const fmtInt = (n) => new Intl.NumberFormat('pt-BR').format(Math.round(n));
+const fmtUSD = (n) => '$' + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.round(n));
+const fmtPct = (n, d=1) => (n>=0?'+':'') + n.toFixed(d) + '%';
+
+const C = getComputedStyle(document.documentElement);
+const INK = C.getPropertyValue('--ink').trim();
+const INK_MUTE = C.getPropertyValue('--ink-mute').trim();
+const LINE = C.getPropertyValue('--line').trim();
+const POS = C.getPropertyValue('--pos').trim();
+const NEG = C.getPropertyValue('--neg').trim();
+const RED    = C.getPropertyValue('--c-red').trim();
+const BLUE   = C.getPropertyValue('--c-blue').trim();
+const GREEN  = C.getPropertyValue('--c-green').trim();
+const YELLOW = C.getPropertyValue('--c-yellow').trim();
+const PURPLE = C.getPropertyValue('--c-purple').trim();
+const ORANGE = C.getPropertyValue('--c-orange').trim();
+const TEAL   = C.getPropertyValue('--c-teal').trim();
+const PINK   = C.getPropertyValue('--c-pink').trim();
+const PALETTE = [RED, BLUE, GREEN, YELLOW, PURPLE, ORANGE, TEAL, PINK];
+
+Chart.defaults.font.family = "'Roboto', Arial, sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = INK;
+Chart.defaults.borderColor = LINE;
+
+const baseGrid = { color: LINE, drawTicks: false };
+const baseAxis = (extra={}) => ({ grid: baseGrid, ticks: { color: INK_MUTE, padding: 8, ...extra } });
+const noGrid   = { grid: { display: false, drawBorder: false }, ticks: { color: INK_MUTE } };
+
+const charts = {};
+function destroy(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+async function load() {
+  if (window.DASHBOARD_DATA) { render(window.DASHBOARD_DATA); return; }
+  try {
+    const r = await fetch('data.json?v=' + Date.now());
+    render(await r.json());
+  } catch (e) {
+    document.querySelector('.container').insertAdjacentHTML('afterbegin',
+      '<div style="background:#fff3cd;border:1px solid #f0d97a;padding:16px;border-radius:8px;margin-bottom:24px;">' +
+      'Não foi possível carregar os dados. Sirva esta pasta por HTTP ou regenere o <code>data.js</code>.</div>');
+  }
+}
+
+function render(d) {
+  document.getElementById('rowCount').textContent = fmtInt(d.totals.rows);
+  document.getElementById('genDate').textContent = new Date(d.generatedAt).toLocaleString('pt-BR');
+  document.getElementById('kpiSalary').textContent = fmtUSD(d.totals.avgSalary);
+  document.getElementById('kpiAuto').textContent = d.totals.avgAutomation.toFixed(1) + '%';
+  document.getElementById('kpiRemote').textContent = d.totals.avgRemote.toFixed(1) + '%';
+  document.getElementById('kpiGrowth').textContent = fmtPct(d.totals.growth);
+  document.getElementById('kpiGrowth').style.color = d.totals.growth >= 0 ? POS : NEG;
+  document.getElementById('kpiGrowthSub').textContent =
+    fmtInt(d.totals.totalOpenings2024) + ' → ' + fmtInt(d.totals.totalOpenings2030) + ' vagas';
+  document.getElementById('footerStats').textContent =
+    fmtInt(d.totals.rows) + ' ocupações · ' + d.industries.length + ' setores · ' + d.locations.length + ' países';
+
+  // ----- salário por setor (barra horizontal) -----
+  const indSorted = [...d.industries].sort((a,b) => b.avgSalary - a.avgSalary);
+  destroy('s1');
+  charts.s1 = new Chart(document.getElementById('chartSalaryByIndustry'), {
+    type: 'bar',
+    data: {
+      labels: indSorted.map(x => x.name),
+      datasets: [{
+        data: indSorted.map(x => x.avgSalary),
+        backgroundColor: BLUE,
+        borderRadius: 4,
+        barThickness: 18,
+      }],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => fmtUSD(ctx.parsed.x) } },
+      },
+      scales: {
+        x: { ...baseAxis(), ticks: { ...baseAxis().ticks, callback: (v) => '$' + (v/1000) + 'k' } },
+        y: noGrid,
+      },
+    },
+  });
+
+  // ----- automação por setor -----
+  const autoSorted = [...d.industries].sort((a,b) => b.avgAutomation - a.avgAutomation);
+  destroy('s2');
+  charts.s2 = new Chart(document.getElementById('chartAutoByIndustry'), {
+    type: 'bar',
+    data: {
+      labels: autoSorted.map(x => x.name),
+      datasets: [{
+        data: autoSorted.map(x => x.avgAutomation),
+        backgroundColor: RED,
+        borderRadius: 4,
+        barThickness: 18,
+      }],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => ctx.parsed.x.toFixed(1) + '%' } },
+      },
+      scales: {
+        x: { ...baseAxis(), max: 100, ticks: { ...baseAxis().ticks, callback: (v) => v + '%' } },
+        y: noGrid,
+      },
+    },
+  });
+
+  // ----- crescimento por setor -----
+  const growthSorted = [...d.industries].sort((a,b) => b.growth - a.growth);
+  destroy('s3');
+  charts.s3 = new Chart(document.getElementById('chartGrowthByIndustry'), {
+    type: 'bar',
+    data: {
+      labels: growthSorted.map(x => x.name),
+      datasets: [{
+        data: growthSorted.map(x => x.growth),
+        backgroundColor: growthSorted.map(x => x.growth >= 0 ? POS : NEG),
+        borderRadius: 4,
+        barThickness: 28,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: {
+          label: (ctx) => {
+            const idx = ctx.dataIndex;
+            const r = growthSorted[idx];
+            return [
+              'Crescimento: ' + fmtPct(r.growth),
+              '2024: ' + fmtInt(r.openings2024) + ' vagas',
+              '2030: ' + fmtInt(r.openings2030) + ' vagas',
+            ];
+          },
+        } },
+      },
+      scales: {
+        x: noGrid,
+        y: { ...baseAxis(), ticks: { ...baseAxis().ticks, callback: (v) => v + '%' } },
+      },
+    },
+  });
+
+  // ----- escolaridade -----
+  destroy('s4');
+  charts.s4 = new Chart(document.getElementById('chartEducation'), {
+    data: {
+      labels: d.education.map(x => x.name.replace('’','’')),
+      datasets: [
+        { type: 'bar', label: 'Vagas', data: d.education.map(x => x.count), backgroundColor: PURPLE, yAxisID: 'y', borderRadius: 4, barThickness: 28, order: 2 },
+        { type: 'line', label: 'Salário médio', data: d.education.map(x => x.avgSalary), borderColor: YELLOW, backgroundColor: YELLOW, yAxisID: 'y1', tension: 0.3, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2, order: 1 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, padding: 14 } } },
+      scales: {
+        x: { ...noGrid, ticks: { ...noGrid.ticks, font: { size: 10 } } },
+        y: { ...baseAxis(), position: 'left', title: { display: true, text: 'Vagas', color: INK_MUTE, font: { size: 11 } } },
+        y1: { ...baseAxis(), position: 'right', grid: { display: false }, ticks: { ...baseAxis().ticks, callback: (v) => '$' + (v/1000) + 'k' }, title: { display: true, text: 'Salário', color: INK_MUTE, font: { size: 11 } } },
+      },
+    },
+  });
+
+  // ----- status do cargo (doughnut) -----
+  const statusLabels = Object.keys(d.jobStatus);
+  const statusVals = statusLabels.map(k => d.jobStatus[k]);
+  destroy('s5');
+  charts.s5 = new Chart(document.getElementById('chartStatus'), {
+    type: 'doughnut',
+    data: {
+      labels: statusLabels.map(s => s === 'Increasing' ? 'Em alta' : 'Em queda'),
+      datasets: [{
+        data: statusVals,
+        backgroundColor: [GREEN, RED],
+        borderColor: '#fff', borderWidth: 3,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '62%',
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, padding: 12 } },
+        tooltip: { callbacks: { label: (ctx) => ctx.label + ': ' + fmtInt(ctx.parsed) + ' vagas' } },
+      },
+    },
+  });
+
+  // ----- impacto da IA (doughnut) -----
+  const impactOrder = ['Low','Moderate','High'];
+  const impactPt = { Low: 'Baixo', Moderate: 'Moderado', High: 'Alto' };
+  const impactLabels = impactOrder.filter(k => d.aiImpact[k] != null);
+  destroy('s6');
+  charts.s6 = new Chart(document.getElementById('chartImpact'), {
+    type: 'doughnut',
+    data: {
+      labels: impactLabels.map(k => impactPt[k]),
+      datasets: [{
+        data: impactLabels.map(k => d.aiImpact[k]),
+        backgroundColor: [GREEN, YELLOW, RED],
+        borderColor: '#fff', borderWidth: 3,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '62%',
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, padding: 12 } },
+        tooltip: { callbacks: { label: (ctx) => ctx.label + ': ' + fmtInt(ctx.parsed) + ' vagas' } },
+      },
+    },
+  });
+
+  // ----- distribuição salarial -----
+  destroy('s7');
+  charts.s7 = new Chart(document.getElementById('chartSalaryDist'), {
+    type: 'bar',
+    data: {
+      labels: d.salaryBuckets.map(x => x.bucket),
+      datasets: [{ data: d.salaryBuckets.map(x => x.count), backgroundColor: GREEN, borderRadius: 4 }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: noGrid, y: baseAxis() },
+    },
+  });
+
+  // ----- distribuição risco -----
+  destroy('s8');
+  charts.s8 = new Chart(document.getElementById('chartRiskDist'), {
+    type: 'bar',
+    data: {
+      labels: d.riskBuckets.map(x => x.bucket),
+      datasets: [{ data: d.riskBuckets.map(x => x.count), backgroundColor: PURPLE, borderRadius: 4 }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: noGrid, y: baseAxis() },
+    },
+  });
+
+  // ----- impacto por setor (barras empilhadas) -----
+  const orderedInd = [...d.industries].sort((a,b) => {
+    const ai = d.industryImpact.find(x => x.name === a.name);
+    const bi = d.industryImpact.find(x => x.name === b.name);
+    const aP = ai ? ai.High / (ai.High + ai.Moderate + ai.Low) : 0;
+    const bP = bi ? bi.High / (bi.High + bi.Moderate + bi.Low) : 0;
+    return bP - aP;
+  });
+  const lookup = Object.fromEntries(d.industryImpact.map(x => [x.name, x]));
+  destroy('s9');
+  charts.s9 = new Chart(document.getElementById('chartIndustryImpact'), {
+    type: 'bar',
+    data: {
+      labels: orderedInd.map(x => x.name),
+      datasets: [
+        { label: 'Alto', data: orderedInd.map(x => lookup[x.name]?.High || 0), backgroundColor: RED, borderWidth: 0, stack: 's' },
+        { label: 'Moderado', data: orderedInd.map(x => lookup[x.name]?.Moderate || 0), backgroundColor: YELLOW, borderWidth: 0, stack: 's' },
+        { label: 'Baixo', data: orderedInd.map(x => lookup[x.name]?.Low || 0), backgroundColor: GREEN, borderWidth: 0, stack: 's' },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, padding: 14 } } },
+      scales: {
+        x: { stacked: true, ...noGrid },
+        y: { stacked: true, ...baseAxis() },
+      },
+    },
+  });
+
+  // ----- vagas por país -----
+  const locSorted = [...d.locations].sort((a,b) => b.count - a.count);
+  destroy('s10');
+  charts.s10 = new Chart(document.getElementById('chartLocationCount'), {
+    type: 'bar',
+    data: {
+      labels: locSorted.map(x => x.name),
+      datasets: [{ data: locSorted.map(x => x.count), backgroundColor: locSorted.map((_,i) => PALETTE[i % PALETTE.length]), borderRadius: 4, barThickness: 22 }],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: baseAxis(), y: noGrid },
+    },
+  });
+
+  // ----- salário por país -----
+  const locSal = [...d.locations].sort((a,b) => b.avgSalary - a.avgSalary);
+  destroy('s11');
+  charts.s11 = new Chart(document.getElementById('chartLocationSalary'), {
+    type: 'bar',
+    data: {
+      labels: locSal.map(x => x.name),
+      datasets: [{ data: locSal.map(x => x.avgSalary), backgroundColor: locSal.map((_,i) => PALETTE[i % PALETTE.length]), borderRadius: 4, barThickness: 22 }],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => fmtUSD(ctx.parsed.x) } },
+      },
+      scales: {
+        x: { ...baseAxis(), ticks: { ...baseAxis().ticks, callback: (v) => '$' + (v/1000) + 'k' } },
+        y: noGrid,
+      },
+    },
+  });
+
+  // ----- scatter risco × remoto -----
+  const minS = Math.min(...d.riskVsRemote.map(p => p[2]));
+  const maxS = Math.max(...d.riskVsRemote.map(p => p[2]));
+  const scaleR = (s) => 3 + 9 * ((s - minS) / Math.max(1, maxS - minS));
+  destroy('s12');
+  charts.s12 = new Chart(document.getElementById('chartScatter'), {
+    type: 'bubble',
+    data: {
+      datasets: [{
+        data: d.riskVsRemote.map(p => ({ x: p[0], y: p[1], r: scaleR(p[2]), s: p[2] })),
+        backgroundColor: BLUE + '55',
+        borderColor: BLUE,
+        borderWidth: 1,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => {
+          const p = ctx.raw;
+          return ['Risco IA: ' + p.x + '%', 'Remoto: ' + p.y + '%', 'Salário: ' + fmtUSD(p.s)];
+        } } },
+      },
+      scales: {
+        x: { ...baseAxis(), min: 0, max: 100, title: { display: true, text: 'Risco de automação (%)', color: INK_MUTE, font: { size: 11 } } },
+        y: { ...baseAxis(), min: 0, max: 100, title: { display: true, text: 'Trabalho remoto (%)', color: INK_MUTE, font: { size: 11 } } },
+      },
+    },
+  });
+
+  // ----- tabelas -----
+  function fillRank(id, rows, cols) {
+    const tbody = document.querySelector('#' + id + ' tbody');
+    tbody.innerHTML = '';
+    rows.slice(0, 10).forEach((r, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="rank-idx">' + (i+1).toString().padStart(2,'0') + '</td>' +
+        '<td>' + r.name + '</td>' +
+        cols.map(c => '<td class="num' + (c.cls ? ' '+c.cls(r) : '') + '">' + c.val(r) + '</td>').join('');
+      tbody.appendChild(tr);
+    });
+  }
+  fillRank('tableHighestPaid', d.topHighestPaid, [
+    { val: r => fmtUSD(r.avgSalary) },
+    { val: r => fmtInt(r.count) },
+  ]);
+  fillRank('tableAutomatable', d.topAutomatable, [
+    { val: r => r.avgAutomation.toFixed(1) + '%', cls: r => r.avgAutomation >= 60 ? 'neg' : '' },
+    { val: r => fmtInt(r.count) },
+  ]);
+  fillRank('tableGrowing', d.topGrowing.map(r => ({
+    ...r, _g: ((r.openings2030 - r.openings2024) / r.openings2024) * 100,
+  })), [
+    { val: r => fmtPct(r._g), cls: r => r._g >= 0 ? 'pos' : 'neg' },
+    { val: r => fmtUSD(r.avgSalary) },
+  ]);
+  fillRank('tableListed', d.topMostListed, [
+    { val: r => fmtInt(r.count) },
+    { val: r => fmtUSD(r.avgSalary) },
+  ]);
+}
+
+load();
+</script>
+</body>
+</html>
