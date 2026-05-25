@@ -26,3 +26,6 @@ Painel analítico construído a partir do **AI Job Trends Dataset** (30.000 ocup
 
 ## Documentação:
 
+- [A3 Análise de dados e big data Documento.pdf](https://github.com/user-attachments/files/28203901/A3.Analise.de.dados.e.big.data.Documento.pdf)
+- [A3 Análise de dados e big data Slides.pdf](https://github.com/user-attachments/files/28203903/A3.Analise.de.dados.e.big.data.Slides.pdf)
+
