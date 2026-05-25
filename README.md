@@ -1,6 +1,7 @@
 # Visualização de Dados — Mercado de Trabalho na Era da IA
 
 Painel analítico construído a partir do **AI Job Trends Dataset** (30.000 ocupações, 8 setores, 8 países).
+- Link dos dados: https://www.kaggle.com/datasets/sahilislam007/ai-impact-on-job-market-20242030
 
 ## Acesso
 - Página pública: https://ianakira.github.io/visualizacao-de-dados/
@@ -15,7 +16,3 @@ Painel analítico construído a partir do **AI Job Trends Dataset** (30.000 ocup
 - `data.js` / `data.json` — dataset agregado (gerado por `aggregate.ps1`)
 - `aggregate.ps1` — script PowerShell que processa CSVs em lote e mantém estado incremental
 
-## Como regenerar os dados
-```powershell
-./aggregate.ps1 -Files (Get-ChildItem caminho/para/csvs/*.csv).FullName
-```
