@@ -20,9 +20,9 @@ Painel analítico construído a partir do **AI Job Trends Dataset** (30.000 ocup
 
 ## Alunos:
 
-Ian Akira Fujimori Gaspar - 1072417788
-Henrique Bento - 1072417437
-Pedro Henrique Perez Kruk - 10724112624
+- Ian Akira Fujimori Gaspar - 1072417788
+- Henrique Bento - 1072417437
+- Pedro Henrique Perez Kruk - 10724112624
 
 ## Documentação:
 
