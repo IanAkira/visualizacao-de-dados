@@ -18,11 +18,11 @@ Painel analítico construído a partir do **AI Job Trends Dataset** (30.000 ocup
 - `data.js` / `data.json` — dataset agregado (gerado por `aggregate.ps1`)
 - `aggregate.ps1` — script PowerShell que processa CSVs em lote e mantém estado incremental
 
-##Alunos:
+## Alunos:
 
 Ian Akira Fujimori Gaspar - 1072417788
 Henrique Bento - 1072417437
 Pedro Henrique Perez Kruk - 10724112624
 
-##Documentação:
+## Documentação:
 
